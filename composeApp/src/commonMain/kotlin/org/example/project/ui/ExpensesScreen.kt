@@ -66,7 +66,7 @@ fun ExpensesScreen(
                         AllExpensesHeader()
                     }
                 }
-                items(uiState.expenses) { expense ->
+                items(items = uiState.expenses, key = { it.id }) { expense ->
                     //composable
                     SwipeToDeleteContainer(
                         item = expense,
