@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,37 +35,61 @@ import org.example.project.presentacion.ExpensesUiState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ExpensesScreen(uiState: ExpensesUiState, onExpenseClick: (Expense) -> Unit){
+fun ExpensesScreen(uiState: ExpensesUiState, onExpenseClick: (Expense) -> Unit) {
 
     val colors = getColorsTheme()
-
-    LazyColumn(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ){
-        stickyHeader {
-            Column (
-                modifier = Modifier.background(colors.backgroundColor)
+    when (uiState) {
+        is ExpensesUiState.Loading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ){
-                //composables
-                ExpensesTotalHearde(uiState.total)
-                AllExpensesHeader()
+                CircularProgressIndicator()
             }
         }
-        items(uiState.expenses){ expense ->
-            //composable
-            ExpensesItem(expense = expense, onExpenseClick = onExpenseClick)
+
+        is ExpensesUiState.Success -> {
+            LazyColumn(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                stickyHeader {
+                    Column(
+                        modifier = Modifier.background(colors.backgroundColor)
+                    ) {
+                        //composables
+                        ExpensesTotalHearde(uiState.total)
+                        AllExpensesHeader()
+                    }
+                }
+                items(uiState.expenses) { expense ->
+                    //composable
+                    ExpensesItem(expense = expense, onExpenseClick = onExpenseClick)
+                }
+            }
+
+        }
+
+        is ExpensesUiState.Error -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Error: ${uiState.message}", style = MaterialTheme.typography.body1)
+            }
         }
     }
+
+
 }
 
 @Composable
-fun ExpensesTotalHearde(total: Double){
-    Card(shape = RoundedCornerShape(30), backgroundColor = Color.Black, elevation = 5.dp){
+fun ExpensesTotalHearde(total: Double) {
+    Card(shape = RoundedCornerShape(30), backgroundColor = Color.Black, elevation = 5.dp) {
         Box(
             modifier = Modifier.fillMaxWidth().height(130.dp).padding(16.dp),
             contentAlignment = Alignment.CenterStart
-        ){
+        ) {
             Text(
                 text = "$$total",
                 fontSize = 30.sp,
@@ -81,13 +106,13 @@ fun ExpensesTotalHearde(total: Double){
 }
 
 @Composable
-fun AllExpensesHeader(){
+fun AllExpensesHeader() {
     val colors = getColorsTheme()
 
     Row(
         modifier = Modifier.padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
-    ){
+    ) {
         Text(
             modifier = Modifier.weight(1f),
             text = "All Expenses",
@@ -101,14 +126,14 @@ fun AllExpensesHeader(){
             onClick = { },
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray),
             enabled = false
-        ){
+        ) {
             Text("View All")
         }
     }
 }
 
 @Composable
-fun ExpensesItem(expense:Expense, onExpenseClick: (Expense) -> Unit){
+fun ExpensesItem(expense: Expense, onExpenseClick: (Expense) -> Unit) {
     val colors = getColorsTheme()
 
     Card(
@@ -117,16 +142,16 @@ fun ExpensesItem(expense:Expense, onExpenseClick: (Expense) -> Unit){
         },
         shape = RoundedCornerShape(30),
         backgroundColor = colors.colorExpenseItem
-    ){
-        Row (
+    ) {
+        Row(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Surface (
+            Surface(
                 modifier = Modifier.size(50.dp),
                 shape = RoundedCornerShape(35),
                 color = colors.purple
-            ){
+            ) {
                 Image(
                     modifier = Modifier.padding(10.dp),
                     imageVector = expense.icon,
@@ -135,7 +160,7 @@ fun ExpensesItem(expense:Expense, onExpenseClick: (Expense) -> Unit){
                     contentDescription = "Imagen Icono"
                 )
             }
-            Column (modifier = Modifier.weight(1f).padding(start = 8.dp)){
+            Column(modifier = Modifier.weight(1f).padding(start = 8.dp)) {
                 Text(
                     text = expense.category.name,
                     fontSize = 18.sp,
