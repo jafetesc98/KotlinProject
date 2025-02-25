@@ -16,13 +16,13 @@ import org.example.project.model.ExpensesCategory
     val expenses: List<Expense> = emptyList(),
     val total: Double = 0.0
 )*/
-sealed class ExpensesUiState{
+sealed class ExpensesUiState {
     object Loading : ExpensesUiState()
     data class Success(val expenses: List<Expense>, val total: Double) : ExpensesUiState()
     data class Error(val message: String) : ExpensesUiState()
 }
 
-class ExpensesViewModel(private val repo : ExpenseRepository) : ViewModel() {
+class ExpensesViewModel(private val repo: ExpenseRepository) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ExpensesUiState>(ExpensesUiState.Loading)
     val uiState = _uiState.asStateFlow()
@@ -31,7 +31,7 @@ class ExpensesViewModel(private val repo : ExpenseRepository) : ViewModel() {
         getExpenseList()
     }
 
-    private fun getExpenseList(){
+    private fun getExpenseList() {
         viewModelScope.launch {
             try {
                 while (true) {
@@ -39,13 +39,13 @@ class ExpensesViewModel(private val repo : ExpenseRepository) : ViewModel() {
                     val expenses = repo.getAllExpenses()
                     _uiState.value = ExpensesUiState.Success(expenses, expenses.sumOf { it.amount })
                 }
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 _uiState.value = ExpensesUiState.Error(e.message ?: "Unknown error")
             }
         }
     }
 
-    private suspend fun updateExpenseList(){
+    private suspend fun updateExpenseList() {
         /*viewModelScope.launch {
             allExpenses = repo.getAllExpenses().toMutableList()
             updateState()
@@ -56,12 +56,12 @@ class ExpensesViewModel(private val repo : ExpenseRepository) : ViewModel() {
                 val expenses = repo.getAllExpenses()
                 _uiState.value = ExpensesUiState.Success(expenses, expenses.sumOf { it.amount })
             }
-        }catch (e:Exception){
+        } catch (e: Exception) {
             _uiState.value = ExpensesUiState.Error(e.message ?: "Unknown error")
         }
     }
 
-    fun addExpense(expense: Expense){
+    fun addExpense(expense: Expense) {
         /*viewModelScope.launch {
             repo.addExpense(expense)
             updateState()
@@ -69,31 +69,27 @@ class ExpensesViewModel(private val repo : ExpenseRepository) : ViewModel() {
         }*/
         viewModelScope.launch {
             try {
-                while (true) {
-                    delay(1000)
-                    repo.addExpense(expense)
-                    updateExpenseList()
-                }
-            }catch (e: Exception){
+                _uiState.value = ExpensesUiState.Loading
+                repo.addExpense(expense)
+                updateExpenseList()
+            } catch (e: Exception) {
                 _uiState.value = ExpensesUiState.Error(e.message ?: "Unknown error")
 
             }
         }
     }
 
-    fun editExpense(expense: Expense){
+    fun editExpense(expense: Expense) {
         /*viewModelScope.launch {
             repo.editExpense(expense)
             updateState()
         }*/
         viewModelScope.launch {
             try {
-                while (true) {
-                    delay(1000)
-                    repo.editExpense(expense)
-                    updateExpenseList()
-                }
-            }catch (e: Exception){
+                _uiState.value = ExpensesUiState.Loading
+                repo.editExpense(expense)
+                updateExpenseList()
+            } catch (e: Exception) {
                 _uiState.value = ExpensesUiState.Error(e.message ?: "Unknown error")
 
             }
@@ -101,19 +97,18 @@ class ExpensesViewModel(private val repo : ExpenseRepository) : ViewModel() {
 
     }
 
-    fun deleteExpense(id: Long){
+    fun deleteExpense(id: Long) {
         /*viewModelScope.launch {
             repo.deleteExpense(expense)
             updateState()
 
         }*/viewModelScope.launch {
             try {
-                while (true) {
-                    delay(1000)
-                    repo.deleteExpense(id)
-                    updateExpenseList()
-                }
-            }catch (e: Exception){
+
+                repo.deleteExpense(id)
+                updateExpenseList()
+
+            } catch (e: Exception) {
                 _uiState.value = ExpensesUiState.Error(e.message ?: "Unknown error")
 
             }
@@ -130,12 +125,12 @@ class ExpensesViewModel(private val repo : ExpenseRepository) : ViewModel() {
     }*/
 
 
-    fun getExpensesWithId(id: Long): Expense?{
+    fun getExpensesWithId(id: Long): Expense? {
         //return allExpenses.first { it.id == id }
         return (_uiState.value as? ExpensesUiState.Success)?.expenses?.firstOrNull() { it.id == id }
     }
 
-    fun getCategories():List<ExpensesCategory>{
+    fun getCategories(): List<ExpensesCategory> {
         return repo.getCategories()
 
     }
