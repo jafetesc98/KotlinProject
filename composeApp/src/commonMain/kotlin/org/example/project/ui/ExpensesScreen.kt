@@ -31,11 +31,15 @@ import androidx.compose.ui.unit.sp
 import org.example.project.getColorsTheme
 import org.example.project.model.Expense
 import org.example.project.presentacion.ExpensesUiState
+import org.example.project.utils.SwipeToDeleteContainer
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ExpensesScreen(uiState: ExpensesUiState, onExpenseClick: (Expense) -> Unit) {
+fun ExpensesScreen(
+    uiState: ExpensesUiState, onExpenseClick: (Expense) -> Unit,
+    onDeleteExpense: (expense: Expense) -> Unit
+) {
 
     val colors = getColorsTheme()
     when (uiState) {
@@ -43,7 +47,7 @@ fun ExpensesScreen(uiState: ExpensesUiState, onExpenseClick: (Expense) -> Unit) 
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 CircularProgressIndicator()
             }
         }
@@ -64,7 +68,12 @@ fun ExpensesScreen(uiState: ExpensesUiState, onExpenseClick: (Expense) -> Unit) 
                 }
                 items(uiState.expenses) { expense ->
                     //composable
-                    ExpensesItem(expense = expense, onExpenseClick = onExpenseClick)
+                    SwipeToDeleteContainer(
+                        item = expense,
+                        onDelete = onDeleteExpense
+                    ) {
+                        ExpensesItem(expense = expense, onExpenseClick = onExpenseClick)
+                    }
                 }
             }
 

@@ -3,6 +3,7 @@ package org.example.project.data
 import com.expenseApp.db.AppDatabase
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
@@ -27,6 +28,7 @@ class ExpenseRepoImp(
     override suspend fun getAllExpenses(): List<Expense> {
         return if (queries.selectAll().executeAsList().isEmpty()) {
             val networkResponse = httpClient.get("$BASE_URL/expenses").body<List<NetworkExpense>>()
+            if(networkResponse.isEmpty()) return emptyList()
             val expenses = networkResponse.map { networkExpense ->
                 Expense(
                     id = networkExpense.id,
@@ -97,9 +99,12 @@ class ExpenseRepoImp(
         }
     }
 
-    override suspend fun deleteExpense(expense: Expense): List<Expense> {
-        TODO("")
-        //expenseManager.deleteExpense(expense)
+    override suspend fun deleteExpense(id: Long) {
+        httpClient.delete("$BASE_URL/expenses/${id}")
+        queries.transaction {
+            queries.delete(id=id)
+        }
+
     }
 
     override fun getCategories(): List<ExpensesCategory> {

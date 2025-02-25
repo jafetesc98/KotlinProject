@@ -1,5 +1,6 @@
 package org.example.project.presentacion
 
+import kotlinx.coroutines.delay
 import moe.tlaster.precompose.viewmodel.ViewModel
 import org.example.project.domain.ExpenseRepository
 import org.example.project.model.Expense
@@ -33,8 +34,11 @@ class ExpensesViewModel(private val repo : ExpenseRepository) : ViewModel() {
     private fun getExpenseList(){
         viewModelScope.launch {
             try {
-                val expenses = repo.getAllExpenses()
-                _uiState.value = ExpensesUiState.Success(expenses, expenses.sumOf { it.amount })
+                while (true) {
+                    delay(1000)
+                    val expenses = repo.getAllExpenses()
+                    _uiState.value = ExpensesUiState.Success(expenses, expenses.sumOf { it.amount })
+                }
             }catch (e: Exception){
                 _uiState.value = ExpensesUiState.Error(e.message ?: "Unknown error")
             }
@@ -47,8 +51,11 @@ class ExpensesViewModel(private val repo : ExpenseRepository) : ViewModel() {
             updateState()
         }*/
         try {
-            val expenses = repo.getAllExpenses()
-            _uiState.value = ExpensesUiState.Success(expenses, expenses.sumOf { it.amount })
+            while (true) {
+                delay(1000)
+                val expenses = repo.getAllExpenses()
+                _uiState.value = ExpensesUiState.Success(expenses, expenses.sumOf { it.amount })
+            }
         }catch (e:Exception){
             _uiState.value = ExpensesUiState.Error(e.message ?: "Unknown error")
         }
@@ -62,8 +69,11 @@ class ExpensesViewModel(private val repo : ExpenseRepository) : ViewModel() {
         }*/
         viewModelScope.launch {
             try {
-                repo.addExpense(expense)
-                updateExpenseList()
+                while (true) {
+                    delay(1000)
+                    repo.addExpense(expense)
+                    updateExpenseList()
+                }
             }catch (e: Exception){
                 _uiState.value = ExpensesUiState.Error(e.message ?: "Unknown error")
 
@@ -78,8 +88,11 @@ class ExpensesViewModel(private val repo : ExpenseRepository) : ViewModel() {
         }*/
         viewModelScope.launch {
             try {
-                repo.editExpense(expense)
-                updateExpenseList()
+                while (true) {
+                    delay(1000)
+                    repo.editExpense(expense)
+                    updateExpenseList()
+                }
             }catch (e: Exception){
                 _uiState.value = ExpensesUiState.Error(e.message ?: "Unknown error")
 
@@ -88,15 +101,18 @@ class ExpensesViewModel(private val repo : ExpenseRepository) : ViewModel() {
 
     }
 
-    fun deleteExpense(expense: Expense){
+    fun deleteExpense(id: Long){
         /*viewModelScope.launch {
             repo.deleteExpense(expense)
             updateState()
 
         }*/viewModelScope.launch {
             try {
-                repo.deleteExpense(expense)
-                updateExpenseList()
+                while (true) {
+                    delay(1000)
+                    repo.deleteExpense(id)
+                    updateExpenseList()
+                }
             }catch (e: Exception){
                 _uiState.value = ExpensesUiState.Error(e.message ?: "Unknown error")
 

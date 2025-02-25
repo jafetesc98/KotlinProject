@@ -30,4 +30,5 @@ SELECT * FROM ExpenseEntity;
 categories:
 SELECT category FROM ExpenseEntity;
 
-
+delete:
+DELETE FROM ExpenseEntity WHERE id=?;
