@@ -38,3 +38,6 @@ UNION SELECT "OTHER";
 
 delete:
 DELETE FROM ExpenseEntity WHERE id=?;
+
+truncate:
+DELETE FROM ExpenseEntity;

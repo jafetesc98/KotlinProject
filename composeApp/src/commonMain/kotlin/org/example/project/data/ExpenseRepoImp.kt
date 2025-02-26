@@ -28,6 +28,7 @@ class ExpenseRepoImp(
 
     override suspend fun getAllExpenses(): List<Expense> {
         return if (queries.selectAll().executeAsList().isEmpty()) {
+            queries.truncate()
             val networkResponse = httpClient.get("$BASE_URL/expenses").body<List<NetworkExpense>>()
             if(networkResponse.isEmpty()) return emptyList()
             val expenses = networkResponse.map { networkExpense ->

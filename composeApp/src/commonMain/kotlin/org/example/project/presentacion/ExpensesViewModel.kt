@@ -104,7 +104,6 @@ class ExpensesViewModel(private val repo: ExpenseRepository) : ViewModel() {
 
         }*/viewModelScope.launch {
             try {
-
                 repo.deleteExpense(id)
                 updateExpenseList()
 
