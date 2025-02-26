@@ -43,6 +43,7 @@ fun App(configDevice: CrossConfigDevice? = null) {
                 Navigator(navigator)
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
+                    backgroundColor = colors.backgroundColor,
                     topBar = {
                         TopAppBar(
                             elevation = 0.dp,
