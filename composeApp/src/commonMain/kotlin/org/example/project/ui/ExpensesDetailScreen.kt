@@ -183,7 +183,7 @@ private fun ExpenseTypeSelector(
             Icon(
                 imageVector = Icons.Default.KeyboardArrowDown,
                 contentDescription = "Button Down",
-                tint = colors.colorArrowRound
+                tint = colors.backgroundColor
             )
         }
     }
