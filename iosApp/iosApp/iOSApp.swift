@@ -12,19 +12,19 @@ struct iOSApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     @State var isDarkMode: Bool =
-    UITraitCollection.currentTraitCollection.userInterfaceStyle == .dark
+    UITraitCollection.current.userInterfaceStyle == .dark
     
     var body: some Scene {
         WindowGroup {
             ContentView(isDarkMode: $isDarkMode)
             .onChange(of: scenePhase) { newScenePhase in
                 if newScenePhase == .active {
-                    let osTheme: UITraitCollection.TraitCollection =
-                        UIScreen.mainScreen.traitCollection
+                    let osTheme: UITraitCollection =
+                        UIScreen.main.traitCollection
                         isDarkMode = osTheme.userInterfaceStyle == .dark
                 }
             }
-            .prederredColorScheme(isDarkMode ? .dark : .light)
+            .preferredColorScheme(isDarkMode ? .dark : .light)
         }
     }
 }

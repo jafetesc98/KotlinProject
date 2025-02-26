@@ -25,7 +25,7 @@ struct ContentView: View {
 
     var body: some View {
         ZStack{
-            ColostatusBarView(isDarkMode: $isDarkMode)
+            ColorStatusBarView(isDarkMode: $isDarkMode)
             ComposeView()
         }
         .ignoresSafeArea(.all,edges: .bottom)
