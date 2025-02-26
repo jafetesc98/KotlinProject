@@ -63,7 +63,8 @@ fun ExpensesScreen(
                         modifier = Modifier.fillMaxWidth(),
                         text = "No expenses found, please add your first expense with the + symbol down below",
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.body1
+                        style = MaterialTheme.typography.body1,
+                        color= colors.backgroundColor
                     )
                 }
             }else {
