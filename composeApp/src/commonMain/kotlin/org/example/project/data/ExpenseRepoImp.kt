@@ -57,14 +57,6 @@ class ExpenseRepoImp(
     }
 
     override suspend fun addExpense(expense: Expense) {
-        queries.transaction {
-            queries.insert(
-                amount = expense.amount,
-                category = expense.category.name,
-                description = expense.description
-            )
-        }
-        //expenseManager.addNewExpense(expense)
         httpClient.post("$BASE_URL/expenses") {
             contentType(ContentType.Application.Json)
             setBody(
@@ -75,6 +67,15 @@ class ExpenseRepoImp(
                 )
             )
         }
+        queries.transaction {
+            queries.insert(
+                amount = expense.amount,
+                category = expense.category.name,
+                description = expense.description
+            )
+        }
+        //expenseManager.addNewExpense(expense)
+
     }
 
     override suspend fun editExpense(expense: Expense) {
