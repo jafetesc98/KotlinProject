@@ -3,6 +3,7 @@ package org.example.project.data
 import com.expenseApp.db.AppDatabase
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.network.sockets.mapEngineExceptions
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
@@ -28,7 +29,6 @@ class ExpenseRepoImp(
 
     override suspend fun getAllExpenses(): List<Expense> {
         return if (queries.selectAll().executeAsList().isEmpty()) {
-            queries.truncate()
             val networkResponse = httpClient.get("$BASE_URL/expenses").body<List<NetworkExpense>>()
             if(networkResponse.isEmpty()) return emptyList()
             val expenses = networkResponse.map { networkExpense ->
@@ -40,7 +40,7 @@ class ExpenseRepoImp(
                 )
             }
             expenses.forEach {
-                queries.insert(it.amount, it.category.name,it.description)
+                queries.insert(it.id,it.amount, it.category.name,it.description)
             }
             expenses
         } else {
@@ -57,8 +57,8 @@ class ExpenseRepoImp(
 
     }
 
-    override suspend fun addExpense(expense: Expense) {
-        httpClient.post("$BASE_URL/expenses") {
+    /*override suspend fun addExpense(expense: Expense) {
+        val networkResponse = httpClient.post("$BASE_URL/expenses") {
             contentType(ContentType.Application.Json)
             setBody(
                 NetworkExpense(
@@ -68,16 +68,57 @@ class ExpenseRepoImp(
                 )
             )
         }
-        queries.transaction {
+        val expenses = networkResponse.map { networkExpense ->
+            Expense(
+                id = networkExpense.id,
+                amount = networkExpense.amount,
+                category = ExpensesCategory.valueOf(networkExpense.category),
+                description = networkExpense.description
+            )
+        }
+        expenses.forEach {
+            queries.insert(it.amount, it.category.name,it.description)
+        }
+        expenses
+        /*queries.transaction {
             queries.insert(
                 amount = expense.amount,
                 category = expense.category.name,
                 description = expense.description
             )
-        }
+        }*/
         //expenseManager.addNewExpense(expense)
 
+    }*/
+
+    override suspend fun addExpense(expense: Expense) {
+            // Realiza la solicitud HTTP POST para agregar el gasto y obtener la respuesta como un objeto NetworkExpense
+            val networkResponse: NetworkExpense = httpClient.post("$BASE_URL/expenses") {
+                contentType(ContentType.Application.Json)
+                setBody(
+                    NetworkExpense(
+                        amount = expense.amount,
+                        category = expense.category.name,
+                        description = expense.description
+                    )
+                )
+            }.body()
+
+            // Crea una instancia de Expense a partir de la respuesta de la red
+            val newExpense = Expense(
+                id = networkResponse.id,
+                amount = networkResponse.amount,
+                category = ExpensesCategory.valueOf(networkResponse.category),
+                description = networkResponse.description
+            )
+
+            // Inserta el nuevo gasto en la base de datos
+            queries.transaction {
+                queries.insert(newExpense.id, newExpense.amount, newExpense.category.name, newExpense.description)
+            }
+
     }
+
 
     override suspend fun editExpense(expense: Expense) {
         queries.transaction {
@@ -107,7 +148,13 @@ class ExpenseRepoImp(
         queries.transaction {
             queries.delete(id=id)
         }
-
+        val expense = queries.selectAll()
+        if(expense.executeAsList().isEmpty()) {
+            queries.transaction {
+                //queries.create_table()
+                queries.truncate()
+            }
+        }else{ println("error no esta vacio")}
     }
 
     override fun getCategories(): List<ExpensesCategory> {

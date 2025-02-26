@@ -1,8 +1,14 @@
 CREATE TABLE ExpenseEntity(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY NOT NULL,
     amount REAL NOT NULL,
     category TEXT NOT NULL,
     description TEXT NOT NULL
+);
+
+create_table:
+CREATE TABLE sqlite_sequence(
+    name TEXT NOT NULL,
+    seq INTEGER NOT NULL
 );
 
 --INSERT INTO ExpenseEntity(amount,category,description)
@@ -14,8 +20,8 @@ CREATE TABLE ExpenseEntity(
         --(120.0,'HOUSE','Expenses');
 
 insert:
-INSERT INTO ExpenseEntity(amount, category, description)
-VALUES (?,?,?);
+INSERT INTO ExpenseEntity(id,amount, category, description)
+VALUES (?,?,?,?);
 
 update:
 UPDATE ExpenseEntity
@@ -40,4 +46,6 @@ delete:
 DELETE FROM ExpenseEntity WHERE id=?;
 
 truncate:
-DELETE FROM ExpenseEntity;
+DELETE FROM sqlite_sequence WHERE name = 'ExpenseEntity';
+
+
